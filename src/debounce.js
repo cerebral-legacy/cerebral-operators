@@ -1,23 +1,19 @@
 const pending = {}
 
-export default function (time, continueChain, options = null) {
+export default function (time = 100, acceptedChain = null, options = null) {
   const id = Symbol('id')
 
-  if (options === null) {
-    console.warn('cerebral-addons: calling debounce() without options has been temporarily deprecated. https://gist.github.com/garth/c1ff94b9cb41ad1b107d')
-  }
-
   const {
-    terminateChain = [],
-    immediate = true,
-    throttle = true,
+    discardedChain = [],
+    immediate = false,
+    throttle = false,
     _displayName = 'debounce'
   } = (options || {})
 
   const timeout = function debounceTimeout () {
-    if (pending[id].continue) {
+    if (pending[id].accepted) {
       // continue the final signal
-      pending[id].continue()
+      pending[id].accepted()
       // immediate debounce should wait until time before sending immediate again
       if (immediate) {
         pending[id] = {
@@ -35,9 +31,9 @@ export default function (time, continueChain, options = null) {
   const debounce = function debounce ({ output }) {
     if (pending[id]) {
       // not first time
-      if (pending[id].terminate) {
-        // terminate the previous signal
-        pending[id].terminate()
+      if (pending[id].discarded) {
+        // discard the previous signal
+        pending[id].discarded()
 
         // convert from throttle to a debounce
         // todo: this flag should eventually be removed
@@ -49,8 +45,8 @@ export default function (time, continueChain, options = null) {
         }
       }
       // replace previous signal with this one
-      pending[id].continue = output.continue
-      pending[id].terminate = output.terminate
+      pending[id].accepted = output.accepted
+      pending[id].discarded = output.discarded
     } else {
       // first time
       pending[id] = {
@@ -58,26 +54,26 @@ export default function (time, continueChain, options = null) {
       }
       if (!immediate) {
         // queue the signal
-        pending[id].continue = output.continue
-        pending[id].terminate = output.terminate
+        pending[id].accepted = output.accepted
+        pending[id].discarded = output.discarded
       } else {
-        // continue the signal
-        output.continue()
+        // accept the signal
+        output.accepted()
       }
     }
   }
 
   debounce.outputs = [
-    'continue',
-    'terminate'
+    'accepted',
+    'discarded'
   ]
 
   debounce.displayName = `addons.${_displayName}(${time}, ...)`
 
-  return [
+  return !acceptedChain ? debounce : [
     debounce, {
-      continue: continueChain,
-      terminate: terminateChain
+      accepted: acceptedChain,
+      discarded: discardedChain
     }
   ]
 }

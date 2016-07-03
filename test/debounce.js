@@ -8,13 +8,16 @@ function increaseCount ({ state }) {
 }
 
 controller.addSignals({
-  increaseImmediate: {chain: [debounce(1, [increaseCount], {
-    throttle: false
-  })], immediate: true},
-  increaseNotImmediate: {chain: [debounce(1, [increaseCount], {
-    immediate: false,
-    throttle: false
-  })], immediate: true}
+  increaseImmediate: {
+    chain: [debounce(1, [ increaseCount ], {
+      immediate: true
+    })],
+    immediate: true
+  },
+  increaseNotImmediate: {
+    chain: [debounce(1, [ increaseCount ])],
+    immediate: true
+  }
 })
 
 const signals = controller.getSignals()
@@ -67,14 +70,14 @@ describe('debounce()', function () {
 
     const args = {
       output: {
-        continue () {
+        accepted () {
           continued++
           if (continued === 2) {
             expect(terminated).to.equal(3)
             done()
           }
         },
-        terminate () {
+        discarded () {
           terminated++
         }
       }
@@ -96,14 +99,14 @@ describe('debounce()', function () {
 
     const args = {
       output: {
-        continue () {
+        accepted () {
           continued++
           if (continued === 3) {
             expect(terminated).to.equal(3)
             done()
           }
         },
-        terminate () {
+        discarded () {
           terminated++
         }
       }
@@ -127,11 +130,11 @@ describe('debounce()', function () {
 
     const args = {
       output: {
-        continue () {
+        accepted () {
           expect(terminated).to.equal(4)
           done()
         },
-        terminate () {
+        discarded () {
           terminated++
         }
       }
@@ -153,14 +156,14 @@ describe('debounce()', function () {
 
     const args = {
       output: {
-        continue () {
+        accepted () {
           continued++
           if (continued === 2) {
             expect(terminated).to.equal(4)
             done()
           }
         },
-        terminate () {
+        discarded () {
           terminated++
         }
       }
@@ -174,34 +177,5 @@ describe('debounce()', function () {
       chain[0](args)
       chain[0](args)
     }, 15)
-  })
-
-  it('should respect defaults', function (done) {
-    expectCount(1)
-    let terminated = 0
-    let continued = 0
-
-    const chain = debounce(10, [], { clearPending: true, throttle: true })
-
-    const args = {
-      output: {
-        continue () {
-          continued++
-          if (continued === 2) {
-            expect(terminated).to.equal(3)
-            done()
-          }
-        },
-        terminate () {
-          terminated++
-        }
-      }
-    }
-
-    chain[0](args)
-    chain[0](args)
-    chain[0](args)
-    chain[0](args)
-    chain[0](args)
   })
 })
