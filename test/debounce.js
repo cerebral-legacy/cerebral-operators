@@ -9,9 +9,14 @@ function increaseCount ({ state }) {
 
 controller.addSignals({
   increaseImmediate: {
-    chain: [debounce(1, [ increaseCount ], {
-      immediate: true
-    })],
+    chain: [
+      [debounce(1, {
+        immediate: true
+      }), {
+        accepted: [ increaseCount ],
+        discarded: []
+      }]
+    ],
     immediate: true
   },
   increaseNotImmediate: {

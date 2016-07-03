@@ -3,6 +3,11 @@ const pending = {}
 export default function (time = 100, acceptedChain = null, options = null) {
   const id = Symbol('id')
 
+  if (options === null && !Array.isArray(acceptedChain)) {
+    options = acceptedChain
+    acceptedChain = null
+  }
+
   const {
     discardedChain = [],
     immediate = false,
