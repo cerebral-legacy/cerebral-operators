@@ -24,7 +24,7 @@ export default function (path, onValue = true, offValue = false) {
     }
   }
 
-  toggle.displayName = `addons.toggle(${toDisplayName(path, getValue)})`
+  toggle.displayName = `operators.toggle(${toDisplayName(path, getValue)})`
 
   return toggle
 }

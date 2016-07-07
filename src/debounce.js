@@ -73,7 +73,7 @@ export default function (time = 100, acceptedChain = null, options = null) {
     'discarded'
   ]
 
-  debounce.displayName = `addons.${_displayName}(${time}, ...)`
+  debounce.displayName = `operators.${_displayName}(${time}, ...)`
 
   return !acceptedChain ? debounce : [
     debounce, {

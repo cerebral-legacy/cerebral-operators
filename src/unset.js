@@ -7,7 +7,7 @@ export default function (path) {
     unsetValue(args)
   }
 
-  unset.displayName = `addons.unset(${JSON.stringify(path)})`
+  unset.displayName = `operators.unset(${JSON.stringify(path)})`
 
   return unset
 }

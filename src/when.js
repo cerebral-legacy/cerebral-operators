@@ -60,7 +60,7 @@ function when (path, conditions = { 'true': truthy, 'false': otherwise }) {
 
   action.outputs = Object.keys(outputConditions)
 
-  action.displayName = `addons.when(${toDisplayName(path, getValue)})`
+  action.displayName = `operators.when(${toDisplayName(path, getValue)})`
 
   return action
 }
