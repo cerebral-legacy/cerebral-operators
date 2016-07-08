@@ -160,6 +160,19 @@ signal('itemDeleted', [
 ]);
 ```
 
+#### delay
+
+* `delay(time, continueChain)`
+
+```js
+signal('itemAdded', [
+  addItem,
+  delay(500, [
+    removeItemHighlight
+  ])
+]);
+```
+
 #### when
 
 When can be used to check input or state for a specific value, truthy or falsy and then run an action chain when the condition is matched. To check multiple paths, see the operators section below. If no `when.otherwise` condition is provided then an `otherwise` output path will be created for you.
