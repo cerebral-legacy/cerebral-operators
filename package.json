@@ -1,6 +1,6 @@
 {
   "name": "cerebral-operators",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Common operators (actions) for Cerebral",
   "main": "index.js",
   "scripts": {
