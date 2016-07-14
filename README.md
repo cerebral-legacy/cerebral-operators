@@ -5,8 +5,8 @@ Common operators (actions) for Cerebral.
 ## Usage
 
 ```js
-import set from 'cerebral/operators/set';
-import unset from 'cerebral/operators/unset';
+import set from 'cerebral/operators/set'
+import unset from 'cerebral/operators/unset'
 ```
 
 ## Data paths
@@ -56,7 +56,7 @@ Copies a value from input, global state or module state to output, global state 
 
 ```js
 // copy serverSettings from input to the store at /settings
-signal('settingsOpened', [
+export default [
   [
     getServerSettings, {
       success: [
@@ -65,12 +65,12 @@ signal('settingsOpened', [
       error: []
     }
   ]
-]);
+]
 ```
 
 ```js
 // copy newAccount from account module state to output
-signal('newAccountCreated', [
+export default [
   copy('state:account.newAccount', 'output:newAccount'),
   [
     ajax.post('/new-account'), {
@@ -78,7 +78,7 @@ signal('newAccountCreated', [
       error: []
     }
   ]
-]);
+]
 ```
 
 #### debounce
@@ -94,12 +94,12 @@ options to `{ immediate: false }`.
 It is also possible to pass a `terminateChain` to the options which will be called whenever a signal is terminated.
 
 ```js
-signal('keyPressed', [
+export default [
   copy('input:value', 'state:form.field'),
   debounce(500, [
     validateForm
   ])
-]);
+]
 ```
 
 #### set
@@ -107,14 +107,14 @@ signal('keyPressed', [
 * `set(path, value)`
 
 ```js
-signal('optionsFormOpened', [
+export default [
   set('state:isLoading', 'true'),
   [getOptionsFromServer, {
     success: [],
     error: []
   }],
   set('state:isLoading', 'false')
-]);
+]
 ```
 
 #### throttle
@@ -126,12 +126,12 @@ throttle can be used to limit the number a times an actionChain is called, for e
 It is also possible to pass a `terminateChain` to the options which will be called whenever a signal is terminated.
 
 ```js
-signal('KeyPressed', [
+export default [
   copy('input:value', 'state:form.field'),
   throttle(500, [
     validateForm
   ])
-]);
+]
 ```
 
 #### toggle
@@ -140,14 +140,16 @@ signal('KeyPressed', [
 
 ```js
 // toggle the menu between true and false
-signal('menuToggled', [
+export default [
   toggle('state:isMenuOpen')
-]);
+]
+```
 
+```js
 // toggle the switch between "On" and "Off"
-signal('switchToggled', [
+export default [
   toggle('state:switch', 'On', 'Off')
-]);
+]
 ```
 
 #### unset
@@ -155,9 +157,9 @@ signal('switchToggled', [
 * `unset(path)`
 
 ```js
-signal('itemDeleted', [
+export default [
   unset('state:item')
-]);
+]
 ```
 
 #### delay
@@ -165,12 +167,12 @@ signal('itemDeleted', [
 * `delay(time, continueChain)`
 
 ```js
-signal('itemAdded', [
+export default [
   addItem,
   delay(500, [
     removeItemHighlight
   ])
-]);
+]
 ```
 
 #### when
@@ -187,12 +189,12 @@ when exports the following symbols
 
 ```js
 // simple when using default outputs
-signal('reloadData', [
+export default [
   when('state:isLoading'), {
     true: [tryAgainLater],
     false: [doReload]
   }
-]);
+]
 ```
 
 ```js
@@ -200,14 +202,14 @@ signal('reloadData', [
 let whenUser = when('state:users.currentUser', {
   isLoggedIn: when.truthy,
   isUnknown: when.otherwise
-});
+})
 
-signal('securePageOpened', [
+export default [
   whenUser, {
     isLoggedIn: [getPageData],
     isUnknown: [redirectToHome]
   }
-]);
+]
 ```
 
 ```js
@@ -215,26 +217,26 @@ signal('securePageOpened', [
 let whenFormIsValid = when('state:form.errorMessage', {
   valid: 'no errors found',
   invalid: when.otherwise
-});
+})
 
-signal('formSubmitted', [
+export default [
   validateForm,
   whenFormIsValid, {
     valid: [sendToServer],
     invalid: [showErrorSnackBarMessage]
   }
-]);
+]
 ```
 
 ```js
 // check for specific values against an array of possible matches
-signal('somethingHappened', [
+export default [
   when('input:actionType', [ 'close', 'open' ]), {
     close: [],
     open: [],
     otherwise: []
   }
-]);
+]
 ```
 
 ## Contribute
