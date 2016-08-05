@@ -68,6 +68,8 @@ export default function (time = 100, acceptedChain = null, options = null) {
     }
   }
 
+  debounce.async = true
+
   debounce.outputs = [
     'accepted',
     'discarded'
