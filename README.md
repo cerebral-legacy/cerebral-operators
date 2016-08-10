@@ -102,6 +102,32 @@ export default [
 ]
 ```
 
+#### filter
+
+* `filter(path, compare, acceptChain = null, options = { discardedChain: [] })`
+
+filter accepts a path and compares the value at the path with `compare` value.
+
+```js
+export default [
+  filter('input:user.isAdmin', true, [
+    doAdminTasks
+  ])
+]
+```
+
+If `compare` is a function then it will be executed and should return a truthy/falsy value.
+
+* compare function: `(value, context) => value === 'what I expected'`
+
+```js
+export default [
+  filter('input:user', (user, { state }) => user.isAdmin && !user.name == 'Brian' && state.get('inAdminMode'), [
+    doAdminTasks
+  ])
+]
+```
+
 #### set
 
 * `set(path, value)`
