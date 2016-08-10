@@ -8,9 +8,13 @@ export default function (path, filterFunc, acceptedChain = null, options = null)
     discardedChain = []
   } = (options || {})
 
+  const filter = typeof filterFunc === 'function'
+    ? filterFunc
+    : (value) => value === filterFunc
+
   // test the getter returned value
   const filterTest = (args, value) => {
-    args.output[filterFunc(value) ? 'accepted' : 'discarded']()
+    args.output[filter(value, args) ? 'accepted' : 'discarded']()
   }
 
   // define the action

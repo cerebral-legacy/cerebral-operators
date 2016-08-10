@@ -22,9 +22,27 @@ describe('filter()', function () {
         ],
         immediate: true
       },
+      filterTestLiteralTrue: {
+        chain: [
+          filter('input:value', 'filterTestTrue'), {
+            accepted: [ () => { expect(true).to.be.ok } ],
+            discarded: []
+          }
+        ],
+        immediate: true
+      },
       filterTestFalse: {
         chain: [
           filter('input:value', (val) => val === 'filterTestFalse'), {
+            accepted: [],
+            discarded: [ () => { expect(true).to.be.ok } ]
+          }
+        ],
+        immediate: true
+      },
+      filterTestLiteralFalse: {
+        chain: [
+          filter('input:value', 'filterTestFalse'), {
             accepted: [],
             discarded: [ () => { expect(true).to.be.ok } ]
           }
@@ -43,9 +61,19 @@ describe('filter()', function () {
     signals.filterTestTrue({ value: 'filterTestTrue' })
   })
 
+  it('should call accepted when literal matches', function () {
+    expectCount(1)
+    signals.filterTestLiteralTrue({ value: 'filterTestTrue' })
+  })
+
   it('should call discarded when func return false', function () {
     expectCount(1)
     signals.filterTestFalse({ value: 'wrong value' })
+  })
+
+  it('should call discarded when literal does not match', function () {
+    expectCount(1)
+    signals.filterTestLiteralFalse({ value: 'wrong value' })
   })
 
   it('should call implicatially call accepted when actions passed to factory', function () {
