@@ -1,99 +1,96 @@
 /*global beforeEach,afterEach,describe,it*/
 import when from '../src/when'
 import { reset, check, expect, expectCount } from './helpers/chaiCounter'
-import controller from './helpers/controller'
-
-controller.addSignals({
-  whenTestTrue: {
-    chain: [
-      when('trueTest'), {
-        true: [ () => { expect(true).to.be.ok } ],
-        false: []
-      }
-    ],
-    immediate: true
-  },
-  whenTestFalse: {
-    chain: [
-      when('falseTest'), {
-        true: [],
-        false: [ () => { expect(true).to.be.ok } ]
-      }
-    ],
-    immediate: true
-  },
-  whenTestInputTrue: {
-    chain: [
-      when('input:test'), {
-        true: [ () => { expect(true).to.be.ok } ],
-        false: []
-      }
-    ],
-    immediate: true
-  },
-  whenTestInputFalse: {
-    chain: [
-      when('input:test'), {
-        true: [],
-        false: [ () => { expect(true).to.be.ok } ]
-      }
-    ],
-    immediate: true
-  },
-  whenTestCustomTrue: {
-    chain: [
-      when('trueTest', { yes: true, no: when.otherwise }), {
-        yes: [ () => { expect(true).to.be.ok } ],
-        no: []
-      }
-    ],
-    immediate: true
-  },
-  whenTestCustomFalse: {
-    chain: [
-      when('falseTest', { yes: true, no: when.otherwise }), {
-        yes: [],
-        no: [ () => { expect(true).to.be.ok } ]
-      }
-    ],
-    immediate: true
-  },
-  whenTestImplicitOtherwise: {
-    chain: [
-      when('falseTest', { yes: true }), {
-        yes: [],
-        otherwise: [ () => { expect(true).to.be.ok } ]
-      }
-    ],
-    immediate: true
-  },
-  whenTestArray: {
-    chain: [
-      when('yesTest', [ 'yes', 'no' ]), {
-        yes: [ () => { expect(true).to.be.ok } ],
-        no: [],
-        otherwise: []
-      }
-    ],
-    immediate: true
-  }
-})
-
-const signals = controller.getSignals()
-let tree
+import { Controller } from 'cerebral-testable'
 
 beforeEach(reset)
 afterEach(check)
 
 describe('when()', function () {
+  let controller, signals
+
   beforeEach(function () {
-    tree = controller.model.tree
-    tree.set({
+    [controller, signals] = Controller({
       trueTest: true,
       falseTest: false,
       yesTest: 'yes'
     })
-    tree.commit()
+
+    controller.addSignals({
+      whenTestTrue: {
+        chain: [
+          when('trueTest'), {
+            true: [ () => { expect(true).to.be.ok } ],
+            false: []
+          }
+        ],
+        immediate: true
+      },
+      whenTestFalse: {
+        chain: [
+          when('falseTest'), {
+            true: [],
+            false: [ () => { expect(true).to.be.ok } ]
+          }
+        ],
+        immediate: true
+      },
+      whenTestInputTrue: {
+        chain: [
+          when('input:test'), {
+            true: [ () => { expect(true).to.be.ok } ],
+            false: []
+          }
+        ],
+        immediate: true
+      },
+      whenTestInputFalse: {
+        chain: [
+          when('input:test'), {
+            true: [],
+            false: [ () => { expect(true).to.be.ok } ]
+          }
+        ],
+        immediate: true
+      },
+      whenTestCustomTrue: {
+        chain: [
+          when('trueTest', { yes: true, no: when.otherwise }), {
+            yes: [ () => { expect(true).to.be.ok } ],
+            no: []
+          }
+        ],
+        immediate: true
+      },
+      whenTestCustomFalse: {
+        chain: [
+          when('falseTest', { yes: true, no: when.otherwise }), {
+            yes: [],
+            no: [ () => { expect(true).to.be.ok } ]
+          }
+        ],
+        immediate: true
+      },
+      whenTestImplicitOtherwise: {
+        chain: [
+          when('falseTest', { yes: true }), {
+            yes: [],
+            otherwise: [ () => { expect(true).to.be.ok } ]
+          }
+        ],
+        immediate: true
+      },
+      whenTestArray: {
+        chain: [
+          when('yesTest', [ 'yes', 'no' ]), {
+            yes: [ () => { expect(true).to.be.ok } ],
+            no: [],
+            otherwise: []
+          }
+        ],
+        immediate: true
+      }
+    })
   })
 
   it('should call true when true', function () {

@@ -1,29 +1,26 @@
 /*global beforeEach,describe,it*/
 import throttle from '../src/throttle'
 import { expect } from 'chai'
-import controller from './helpers/controller'
+import { Controller } from 'cerebral-testable'
 
 function increaseCount ({ state }) {
   state.set('count', state.get('count') + 1)
 }
 
-controller.addSignals({
-  increaseImmediateThrottle: {
-    chain: [
-      throttle(1, [ increaseCount ])
-    ], immediate: true}
-})
-
-const signals = controller.getSignals()
-let tree
-
 describe('throttle()', function () {
+  let controller, signals
+
   beforeEach(function () {
-    tree = controller.model.tree
-    tree.set({
+    [controller, signals] = Controller({
       count: 0
     })
-    tree.commit()
+
+    controller.addSignals({
+      increaseImmediateThrottle: {
+        chain: [
+          throttle(1, [ increaseCount ])
+        ], immediate: true}
+    })
   })
 
   it('should not call increase more than twice', function (done) {
@@ -34,7 +31,7 @@ describe('throttle()', function () {
     signals.increaseImmediateThrottle()
 
     setTimeout(function () {
-      expect(tree.get('count')).to.equal(2)
+      expect(controller.get('count')).to.equal(2)
       done()
     }, 10)
   })

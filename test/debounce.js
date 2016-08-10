@@ -1,43 +1,40 @@
 /*global beforeEach,afterEach,describe,it*/
 import debounce from '../src/debounce'
 import { reset, check, expect, expectCount } from './helpers/chaiCounter'
-import controller from './helpers/controller'
+import { Controller } from 'cerebral-testable'
 
 function increaseCount ({ state }) {
   state.set('count', state.get('count') + 1)
 }
 
-controller.addSignals({
-  increaseImmediate: {
-    chain: [
-      [debounce(1, {
-        immediate: true
-      }), {
-        accepted: [ increaseCount ],
-        discarded: []
-      }]
-    ],
-    immediate: true
-  },
-  increaseNotImmediate: {
-    chain: [debounce(1, [ increaseCount ])],
-    immediate: true
-  }
-})
-
-const signals = controller.getSignals()
-let tree
-
 beforeEach(reset)
 afterEach(check)
 
 describe('debounce()', function () {
+  let controller, signals
+
   beforeEach(function () {
-    tree = controller.model.tree
-    tree.set({
+    [controller, signals] = Controller({
       count: 0
     })
-    tree.commit()
+
+    controller.addSignals({
+      increaseImmediate: {
+        chain: [
+          [debounce(1, {
+            immediate: true
+          }), {
+            accepted: [ increaseCount ],
+            discarded: []
+          }]
+        ],
+        immediate: true
+      },
+      increaseNotImmediate: {
+        chain: [debounce(1, [ increaseCount ])],
+        immediate: true
+      }
+    })
   })
 
   it('should not call increase more than twice when immediate', function (done) {
@@ -48,7 +45,7 @@ describe('debounce()', function () {
     signals.increaseImmediate()
 
     setTimeout(function () {
-      expect(tree.get('count')).to.equal(2)
+      expect(controller.get('count')).to.equal(2)
       done()
     }, 10)
   })
@@ -61,7 +58,7 @@ describe('debounce()', function () {
     signals.increaseNotImmediate()
 
     setTimeout(function () {
-      expect(tree.get('count')).to.equal(1)
+      expect(controller.get('count')).to.equal(1)
       done()
     }, 10)
   })
