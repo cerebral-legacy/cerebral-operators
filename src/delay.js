@@ -5,7 +5,7 @@ export default function (time, continueChain) {
 
   delay.async = true
   delay.outputs = ['continue']
-  delay.displayName = `operators.delay(${time})`
+  delay.displayName = `operator DELAY (${time})`
 
   if (continueChain) {
     return [

@@ -1,35 +1,39 @@
-import getCompiler from 'cerebral-url-scheme-compiler/get'
-import toDisplayName from './helpers/toDisplayName'
+import parseScheme from 'cerebral-scheme-parser'
+import populateInputAndStateSchemes from './helpers/populateInputAndStateSchemes'
 const truthy = Symbol('truthy')
 const falsy = Symbol('falsy')
 const otherwise = Symbol('otherwise')
 
 function when (path, conditions = { 'true': truthy, 'false': otherwise }) {
-  const getValue = getCompiler(path)
+  const pathScheme = parseScheme(path)
+
+  if (pathScheme.target !== 'state' && pathScheme.target !== 'input') {
+    throw new Error('Cerebral operator WHEN - The path: "' + path + '" does not target "input" or "state"')
+  }
 
   // prepare the output conditions
   let otherwisePath = null
   const outputConditions = {}
-  if (Array.isArray(conditions)) {
-    conditions.forEach((condition) => {
-      outputConditions[condition] = condition
-    })
-  } else {
-    for (let path in conditions) {
-      outputConditions[path] = conditions[path]
-      otherwisePath = otherwisePath || (conditions[path] === otherwise && path)
-    }
+
+  for (let path in conditions) {
+    outputConditions[path] = conditions[path]
+    otherwisePath = otherwisePath || (conditions[path] === otherwise && path)
   }
+
   if (!otherwisePath) {
     outputConditions['otherwise'] = otherwise
     otherwisePath = 'otherwise'
   }
 
-  // test the getter returned value
-  const whenTest = (args, value) => {
-    // treat objects with no keys as falsy
-    if (value && typeof value === 'object' && Object.keys(value).length === 0) {
-      value = false
+  // define the action
+  let action = function when ({input, state, output}) {
+    const pathValue = pathScheme.getValue(populateInputAndStateSchemes(input, state))
+    let value
+
+    if (pathScheme.target === 'input') {
+      value = input[pathValue]
+    } else if (pathScheme.target === 'state') {
+      value = state.get(pathValue)
     }
 
     let outputPath
@@ -43,24 +47,12 @@ function when (path, conditions = { 'true': truthy, 'false': otherwise }) {
       }
     }
 
-    args.output[outputPath || otherwisePath]()
-  }
-
-  // define the action
-  let action = function whenRead (args) {
-    let value = getValue(args)
-    if (value && typeof value.then === 'function') {
-      value.then((val) => whenTest(args, val)).catch((error) => {
-        console.error(`${action.displayName} caught an error whilst getting a value to test`, error)
-      })
-    } else {
-      whenTest(args, value)
-    }
+    output[outputPath || otherwisePath]()
   }
 
   action.outputs = Object.keys(outputConditions)
 
-  action.displayName = `operators.when(${toDisplayName(path, getValue)})`
+  action.displayName = `operator WHEN (${path})`
 
   return action
 }

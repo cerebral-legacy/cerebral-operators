@@ -1,17 +1,20 @@
-import setCompiler from 'cerebral-url-scheme-compiler/set'
-import toDisplayName from './helpers/toDisplayName'
+import parseScheme from 'cerebral-scheme-parser'
+import populateInputAndStateSchemes from './helpers/populateInputAndStateSchemes'
 
 export default function (path, value) {
-  const setValue = setCompiler(path)
+  const pathScheme = parseScheme(path)
 
-  const set = function set (args) {
-    const response = setValue(args, value)
-    if (response && typeof response.then === 'function') {
-      response.then(args.output.success).catch(args.output.error)
-    }
+  if (pathScheme.target !== 'state') {
+    throw new Error('Cerebral operator SET - The path: "' + path + '" does not target "state"')
   }
 
-  set.displayName = `operators.set(${toDisplayName(path, setValue)}, ${JSON.stringify(value)})`
+  const set = function set ({input, state}) {
+    const pathValue = pathScheme.getValue(populateInputAndStateSchemes(input, state))
+
+    state.set(pathValue, value)
+  }
+
+  set.displayName = 'operator SET'
 
   return set
 }

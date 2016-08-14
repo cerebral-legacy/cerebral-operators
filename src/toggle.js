@@ -1,31 +1,21 @@
-import getCompiler from 'cerebral-url-scheme-compiler/get'
-import setCompiler from 'cerebral-url-scheme-compiler/set'
-import toDisplayName from './helpers/toDisplayName'
+import parseScheme from 'cerebral-scheme-parser'
+import populateInputAndStateSchemes from './helpers/populateInputAndStateSchemes'
 
 export default function (path, onValue = true, offValue = false) {
-  const getValue = getCompiler(path)
-  const setValue = setCompiler(path)
+  const pathScheme = parseScheme(path)
 
-  const toggleWrite = (args, value, async) => {
-    const response = setValue(args, value === onValue ? offValue : onValue)
-    if (response && typeof response.then === 'function') {
-      response.then(args.output.success).catch(args.output.error)
-    } else if (async) {
-      args.output.success()
-    }
+  if (pathScheme.target !== 'state') {
+    throw new Error('Cerebral operator TOGGLE - The path: "' + path + '" does not target "state"')
   }
 
-  const toggle = function toggleRead (args) {
-    let value = getValue(args)
-    if (value && typeof value.then === 'function') {
-      toggle.async = true
-      value.then((val) => toggleWrite(args, val, true)).catch(args.output.error)
-    } else {
-      toggleWrite(args, value)
-    }
+  const toggle = function toggleRead ({input, state}) {
+    const pathValue = pathScheme.getValue(populateInputAndStateSchemes(input, state))
+    const currentValue = state.get(pathValue)
+
+    state.set(pathValue, currentValue === onValue ? offValue : onValue)
   }
 
-  toggle.displayName = `operators.toggle(${toDisplayName(path, getValue)})`
+  toggle.displayName = 'operator TOGGLE'
 
   return toggle
 }

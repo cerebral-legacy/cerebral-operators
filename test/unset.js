@@ -9,12 +9,29 @@ describe('unset()', function () {
   it('should unset a value', function () {
     expectCount(1)
 
-    const action = unset('test')
+    const action = unset('state:test')
 
     action({
       state: {
         unset (path) {
           expect(path).to.equal('test')
+        }
+      }
+    })
+  })
+
+  it('should unset with inline schemes', function () {
+    expectCount(1)
+
+    const action = unset('state:test.{{input:path}}')
+
+    action({
+      input: {
+        path: 'foo'
+      },
+      state: {
+        unset (path) {
+          expect(path).to.equal('test.foo')
         }
       }
     })

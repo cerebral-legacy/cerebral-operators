@@ -1,13 +1,20 @@
-import unsetCompiler from 'cerebral-url-scheme-compiler/get'
+import parseScheme from 'cerebral-scheme-parser'
+import populateInputAndStateSchemes from './helpers/populateInputAndStateSchemes'
 
 export default function (path) {
-  const unsetValue = unsetCompiler(path, 'unset')
+  const pathScheme = parseScheme(path)
 
-  const unset = function unset (args) {
-    unsetValue(args)
+  if (pathScheme.target !== 'state') {
+    throw new Error('Cerebral operator UNSET - The path: "' + path + '" does not target "state"')
   }
 
-  unset.displayName = `operators.unset(${JSON.stringify(path)})`
+  const unset = function unset ({input, state}) {
+    const pathValue = pathScheme.getValue(populateInputAndStateSchemes(input, state))
+
+    state.unset(pathValue)
+  }
+
+  unset.displayName = 'operator UNSET'
 
   return unset
 }

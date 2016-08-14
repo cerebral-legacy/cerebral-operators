@@ -19,7 +19,7 @@ describe('when()', function () {
     controller.addSignals({
       whenTestTrue: {
         chain: [
-          when('trueTest'), {
+          when('state:trueTest'), {
             true: [ () => { expect(true).to.be.ok } ],
             false: []
           }
@@ -28,7 +28,7 @@ describe('when()', function () {
       },
       whenTestFalse: {
         chain: [
-          when('falseTest'), {
+          when('state:falseTest'), {
             true: [],
             false: [ () => { expect(true).to.be.ok } ]
           }
@@ -55,7 +55,7 @@ describe('when()', function () {
       },
       whenTestCustomTrue: {
         chain: [
-          when('trueTest', { yes: true, no: when.otherwise }), {
+          when('state:trueTest', { yes: true, no: when.otherwise }), {
             yes: [ () => { expect(true).to.be.ok } ],
             no: []
           }
@@ -64,7 +64,7 @@ describe('when()', function () {
       },
       whenTestCustomFalse: {
         chain: [
-          when('falseTest', { yes: true, no: when.otherwise }), {
+          when('state:falseTest', { yes: true, no: when.otherwise }), {
             yes: [],
             no: [ () => { expect(true).to.be.ok } ]
           }
@@ -73,19 +73,9 @@ describe('when()', function () {
       },
       whenTestImplicitOtherwise: {
         chain: [
-          when('falseTest', { yes: true }), {
+          when('state:falseTest', { yes: true }), {
             yes: [],
             otherwise: [ () => { expect(true).to.be.ok } ]
-          }
-        ],
-        immediate: true
-      },
-      whenTestArray: {
-        chain: [
-          when('yesTest', [ 'yes', 'no' ]), {
-            yes: [ () => { expect(true).to.be.ok } ],
-            no: [],
-            otherwise: []
           }
         ],
         immediate: true
@@ -129,10 +119,5 @@ describe('when()', function () {
   it('should call implicitally add otherwise when not supplied', function () {
     expectCount(1)
     signals.whenTestImplicitOtherwise()
-  })
-
-  it('should accept an array of conditions', function () {
-    expectCount(1)
-    signals.whenTestArray()
   })
 })

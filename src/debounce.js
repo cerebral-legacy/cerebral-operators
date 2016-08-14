@@ -11,8 +11,7 @@ export default function (time = 100, acceptedChain = null, options = null) {
   const {
     discardedChain = [],
     immediate = false,
-    throttle = false,
-    _displayName = 'debounce'
+    throttle = false
   } = (options || {})
 
   const timeout = function debounceTimeout () {
@@ -75,7 +74,7 @@ export default function (time = 100, acceptedChain = null, options = null) {
     'discarded'
   ]
 
-  debounce.displayName = `operators.${_displayName}(${time}, ...)`
+  debounce.displayName = `operator ${throttle ? 'THROTTLE' : 'DEBOUNCE'} (${time})`
 
   return !acceptedChain ? debounce : [
     debounce, {
