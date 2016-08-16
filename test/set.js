@@ -6,7 +6,7 @@ beforeEach(reset)
 afterEach(check)
 
 describe('set()', function () {
-  it('should set a value', function () {
+  it('should set a value in state', function () {
     expectCount(2)
 
     const action = set('state:test', 'XYZ')
@@ -35,6 +35,18 @@ describe('set()', function () {
         get: function (path) {
           return path
         }
+      }
+    })
+  })
+
+  it('should set a value on output', function () {
+    expectCount(1)
+
+    const action = set('output:test', 'XYZ')
+
+    action({
+      output: function (obj) {
+        expect(obj.test).to.equal('XYZ')
       }
     })
   })
