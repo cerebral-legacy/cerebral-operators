@@ -24,6 +24,7 @@ export default function (fromPath, ...toPaths) {
   const copy = function copyFrom (args) {
     let value = getValue(args)
     if (value && typeof value.then === 'function') {
+      copy.async = true
       value.then((val) => copyTo(setValues, args, val, true)).catch(args.output.error)
     } else {
       copyTo(setValues, args, value)
