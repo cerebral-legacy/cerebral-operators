@@ -1,38 +1,36 @@
-import getCompiler from 'cerebral-url-scheme-compiler/get'
-import setCompiler from 'cerebral-url-scheme-compiler/set'
-import toDisplayName from './helpers/toDisplayName'
+import parseScheme from 'cerebral-scheme-parser'
+import populateInputAndStateSchemes from './helpers/populateInputAndStateSchemes'
 
-export default function (fromPath, ...toPaths) {
-  const getValue = getCompiler(fromPath)
-  const setValues = toPaths.map((toPath) => setCompiler(toPath))
+export default function (fromPath, toPath) {
+  const fromPathScheme = parseScheme(fromPath)
+  const toPathScheme = parseScheme(toPath)
 
-  const copyTo = (setters, args, value, async) => {
-    if (setters.length === 0) {
-      if (async) {
-        args.output.success(value)
-      }
-    } else {
-      const response = setters[0](args, value)
-      if (response && typeof response.then === 'function') {
-        response.then((val) => copyTo(setters.slice(1), args, val, true)).catch(args.output.error)
-      } else {
-        copyTo(setters.slice(1), args, response, async)
-      }
+  if (fromPathScheme.target !== 'input' && fromPathScheme.target !== 'state') {
+    throw new Error('Cerebral operator COPY - The path: "' + fromPath + '" is not valid, you have to give it a "state" or "input" target')
+  }
+
+  if (toPathScheme.target !== 'state' && toPathScheme.target !== 'output') {
+    throw new Error('Cerebral operator COPY - The path: "' + toPath + '" is not valid, you have to give it a "state" or "output" target')
+  }
+
+  const copy = function ({input, state, output}) {
+    const fromPathValue = fromPathScheme.getValue(populateInputAndStateSchemes(input, state))
+    const toPathValue = toPathScheme.getValue(populateInputAndStateSchemes(input, state))
+    let fromValue
+
+    if (fromPathScheme.target === 'input') {
+      fromValue = input[fromPathValue]
+    } else if (fromPathScheme.target === 'state') {
+      fromValue = state.get(fromPathValue)
+    }
+
+    if (toPathScheme.target === 'state') {
+      state.set(toPathValue, fromValue)
+    } else if (toPathScheme.target === 'output') {
+      output({[toPathScheme.value]: fromValue})
     }
   }
 
-  const copy = function copyFrom (args) {
-    let value = getValue(args)
-    if (value && typeof value.then === 'function') {
-      copy.async = true
-      value.then((val) => copyTo(setValues, args, val, true)).catch(args.output.error)
-    } else {
-      copyTo(setValues, args, value)
-    }
-  }
-
-  copy.displayName = `operators.copy(${toDisplayName(fromPath, getValue)}, ${toPaths.map((path, index) =>
-    toDisplayName(path, setValues[index])).join(', ')})`
-
+  copy.displayName = 'operator COPY'
   return copy
 }

@@ -4,6 +4,5 @@ export default (time, continueChain, options = null) => debounce(time, continueC
   terminateChain: []
 }, options, {
   immediate: true,
-  throttle: true,
-  _displayName: 'throttle'
+  throttle: true
 }))
