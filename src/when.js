@@ -1,3 +1,4 @@
+import Symbol from 'es6-symbol'
 import parseScheme from 'cerebral-scheme-parser'
 import populateInputAndStateSchemes from './helpers/populateInputAndStateSchemes'
 const truthy = Symbol('truthy')

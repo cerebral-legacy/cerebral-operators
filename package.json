@@ -41,6 +41,7 @@
     "watch": "^0.19.1"
   },
   "dependencies": {
-    "cerebral-scheme-parser": "^0.1.1"
+    "cerebral-scheme-parser": "^0.1.1",
+    "es6-symbol": "^3.1.0"
   }
 }
