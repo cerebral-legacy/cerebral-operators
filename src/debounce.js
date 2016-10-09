@@ -1,3 +1,4 @@
+import Symbol from 'es6-symbol'
 const pending = {}
 
 export default function (time = 100, acceptedChain = null, options = null) {
