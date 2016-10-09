@@ -1,3 +1,4 @@
+import Symbol from 'es6-symbol'
 import getCompiler from 'cerebral-url-scheme-compiler/get'
 import toDisplayName from './helpers/toDisplayName'
 const truthy = Symbol('truthy')
