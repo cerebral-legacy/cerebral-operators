@@ -1,6 +1,8 @@
 # cerebral-operators [![Build Status](https://secure.travis-ci.org/cerebral/cerebral-operators.png?branch=master)](https://travis-ci.org/cerebral/cerebral-operators)
 
-Common operators (actions) for Cerebral.
+Common operators (actions) for Cerebral 1.x.
+
+In Cerebral 2 the [new operators](https://cerebral.github.io/cerebral-website/api/05_operators.html) are integrated in the core.
 
 ## Usage
 
