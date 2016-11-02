@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cerebral/cerebral-operators.git"
+    "url": "git+https://github.com/cerebral-legacy/cerebral-operators.git"
   },
   "keywords": [
     "cerebral",
