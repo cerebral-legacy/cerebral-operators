@@ -2,7 +2,7 @@
 
 Common operators (actions) for Cerebral 1.x.
 
-In Cerebral 2 the [new operators](https://cerebral.github.io/cerebral-website/api/05_operators.html) are integrated in the core.
+In Cerebral 2 the [new operators](http://cerebraljs.com/docs/api/operators.html) are integrated in the core.
 
 ## Usage
 
